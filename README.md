@@ -56,24 +56,13 @@ Casos ambíguos (como Jasmine, cuja etnia nunca foi declarada de forma unívoca)
 
 *Fontes completas e por personagem estão documentadas na aba "Notas Metodológicas" da planilha.*
 
-## Capturas de tela
-
-> Substitua os caminhos abaixo pelos seus próprios arquivos, salvos numa pasta `screenshots/` ao lado deste README.
-
-![Abertura do ensaio](screenshots/01-abertura.png)
-*Abertura: as 15 princesas em ordem cronológica.*
-
-![Separação por etnia declarada](screenshots/02-etnia-declarada.png)
-*Separação entre etnia nunca declarada e etnia oficialmente declarada.*
-
-![Crítica x público](screenshots/03-critica-publico.png)
-*Recepção da crítica e do público, com Pocahontas e Wish destacadas.*
-
 ## Protótipo visual
 
 Arquivo: `esboco_pudding_historia.html`
 
 Protótipo de scrollytelling em **D3.js**, com um único gráfico que se transforma em 7 etapas conforme a rolagem da página (linha do tempo → separação por etnia declarada/não declarada → bilheteria → recepção crítica × público). Construído como esboço de estrutura para eventual pitch ao Pudding, não como peça final.
+
+![Etapas do protótipo: abertura em ordem cronológica, separação por etnia declarada e recepção da crítica e do público](screenshot.gif)
 
 ## Limitações conhecidas
 
