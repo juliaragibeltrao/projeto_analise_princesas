@@ -1,0 +1,585 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Diversidade sim. Protagonismo, nem sempre.</title>
+  <link
+    href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,500;9..144,600;9..144,700&family=IBM+Plex+Sans:wght@400;500;600&display=swap"
+    rel="stylesheet">
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/d3/7.9.0/d3.min.js"></script>
+  <style>
+    :root {
+      --bg: #faf8fc;
+      --paper: #ffffff;
+      --ink: #2a2233;
+      --dim: #6f667c;
+      --line: #e3dcec;
+      --plum: #4b2461;
+      --gold: #d99a2b;
+      --alerta: #c93a4f;
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      margin: 0;
+      background: var(--bg);
+      color: var(--ink);
+      font-family: 'IBM Plex Sans', sans-serif;
+      font-size: 17px;
+      line-height: 1.65;
+    }
+
+    h1,
+    h2,
+    h3 {
+      font-family: 'Fraunces', serif;
+      font-weight: 600;
+      color: var(--plum);
+      margin: 0;
+    }
+
+    .wrap {
+      max-width: 1180px;
+      margin: 0 auto;
+      padding: 0 28px;
+    }
+
+    /* HERO */
+    .hero {
+      position: relative;
+      overflow: hidden;
+      padding: 110px 0 70px;
+      border-bottom: 1px solid var(--line);
+    }
+
+    .hero .castle {
+      position: absolute;
+      top: -70px;
+      left: 50%;
+      transform: translateX(-50%);
+      width: 1000px;
+      max-width: 150vw;
+      opacity: .5;
+      pointer-events: none;
+      z-index: 0;
+    }
+
+    .hero .wrap {
+      position: relative;
+      z-index: 1;
+    }
+
+    .hero .meta {
+      color: var(--dim);
+      font-size: 15px;
+      margin-bottom: 22px;
+    }
+
+    .hero h1 {
+      font-size: clamp(2.5rem, 6.4vw, 5rem);
+      line-height: 1.02;
+      max-width: 900px;
+      letter-spacing: -.015em;
+    }
+
+    .hero .sub {
+      max-width: 620px;
+      color: var(--dim);
+      font-size: 19px;
+      margin-top: 26px;
+    }
+
+    #strip {
+      display: block;
+      width: 100%;
+      max-width: 760px;
+      height: 70px;
+      margin-top: 44px;
+    }
+
+    /* SCROLLY */
+    .scrolly {
+      display: flex;
+      gap: 56px;
+      padding: 40px 0 20px;
+      align-items: flex-start;
+    }
+
+    .steps {
+      flex: 0 0 38%;
+      max-width: 420px;
+    }
+
+    .step {
+      min-height: 88vh;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      padding: 20px 0;
+      opacity: .3;
+      transition: opacity .35s;
+    }
+
+    .step.on {
+      opacity: 1;
+    }
+
+    .step .when {
+      font-size: 14px;
+      color: var(--dim);
+      margin-bottom: 8px;
+    }
+
+    .step h3 {
+      font-size: 1.75rem;
+      line-height: 1.15;
+      margin-bottom: 14px;
+    }
+
+    .step p {
+      margin: 0 0 12px;
+      color: var(--ink);
+    }
+
+    .step .src {
+      font-size: 13.5px;
+      color: var(--dim);
+    }
+
+    .chart-col {
+      flex: 1;
+      position: sticky;
+      top: 7vh;
+      height: 86vh;
+      min-width: 0;
+    }
+
+    #chart {
+      width: 100%;
+      height: 100%;
+      background: var(--paper);
+      border: 1px solid var(--line);
+      border-radius: 8px;
+    }
+
+    .lab {
+      font-family: 'IBM Plex Sans', sans-serif;
+      font-size: 10.5px;
+      fill: var(--ink);
+      font-weight: 500;
+      text-anchor: middle;
+      pointer-events: none;
+    }
+
+    .tick {
+      font-family: 'IBM Plex Sans', sans-serif;
+      font-size: 10px;
+      fill: var(--dim);
+      text-anchor: middle;
+    }
+
+    .head {
+      font-family: 'Fraunces', serif;
+      font-size: 15px;
+      fill: var(--plum);
+      font-weight: 600;
+    }
+
+    .grid {
+      stroke: var(--line);
+      stroke-width: 1;
+    }
+
+    #tip {
+      position: fixed;
+      pointer-events: none;
+      background: var(--ink);
+      color: #fff;
+      font-size: 12.5px;
+      padding: 7px 10px;
+      border-radius: 6px;
+      opacity: 0;
+      transition: opacity .12s;
+      z-index: 20;
+      max-width: 220px;
+    }
+
+    /* CLOSING */
+    .closing {
+      padding: 110px 0 120px;
+      border-top: 1px solid var(--line);
+    }
+
+    .closing h2 {
+      font-size: clamp(2rem, 4.4vw, 3.2rem);
+      line-height: 1.08;
+      max-width: 820px;
+    }
+
+    .closing p {
+      max-width: 640px;
+      color: var(--dim);
+      font-size: 18px;
+      margin-top: 22px;
+    }
+
+    .note {
+      max-width: 680px;
+      margin-top: 48px;
+      padding-top: 22px;
+      border-top: 1px solid var(--line);
+      font-size: 14px;
+      color: var(--dim);
+    }
+
+    .note b {
+      color: var(--ink);
+      font-weight: 600;
+    }
+
+    @media (max-width:900px) {
+      .scrolly {
+        flex-direction: column;
+        gap: 0;
+      }
+
+      .chart-col {
+        position: sticky;
+        top: 0;
+        height: 50vh;
+        width: 100%;
+        order: -1;
+        z-index: 5;
+        background: var(--bg);
+        padding: 8px 0;
+      }
+
+      .steps {
+        max-width: none;
+        flex: none;
+      }
+
+      .step {
+        min-height: 70vh;
+      }
+    }
+  </style>
+</head>
+
+<body>
+
+  <section class="hero">
+    <svg class="castle" viewBox="0 0 1000 420" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+      <rect x="120" y="300" width="760" height="46" fill="#ded1ef" />
+      <g fill="#ded1ef">
+        <rect x="120" y="286" width="24" height="18" />
+        <rect x="164" y="286" width="24" height="18" />
+        <rect x="208" y="286" width="24" height="18" />
+        <rect x="768" y="286" width="24" height="18" />
+        <rect x="812" y="286" width="24" height="18" />
+        <rect x="856" y="286" width="24" height="18" />
+      </g>
+      <rect x="130" y="220" width="66" height="126" fill="#c9b6df" />
+      <polygon points="130,220 163,150 196,220" fill="#e2694f" />
+      <rect x="804" y="220" width="66" height="126" fill="#c9b6df" />
+      <polygon points="804,220 837,150 870,220" fill="#5c2d73" />
+      <rect x="256" y="176" width="88" height="170" fill="#b79bd6" />
+      <polygon points="256,176 300,92 344,176" fill="#e0a83e" />
+      <rect x="656" y="176" width="88" height="170" fill="#b79bd6" />
+      <polygon points="656,176 700,92 744,176" fill="#3f9d8f" />
+      <rect x="420" y="130" width="160" height="216" fill="#a985cf" />
+      <polygon points="420,130 500,26 580,130" fill="#d8749e" />
+      <path d="M470,346 L470,270 A30,30 0 0 1 530,270 L530,346 Z" fill="#faf8fc" />
+      <g fill="#faf8fc" opacity="0.85">
+        <circle cx="163" cy="255" r="6" />
+        <circle cx="837" cy="255" r="6" />
+        <circle cx="300" cy="220" r="7" />
+        <circle cx="700" cy="220" r="7" />
+        <circle cx="470" cy="190" r="8" />
+        <circle cx="530" cy="190" r="8" />
+      </g>
+      <g stroke="#5c2d73" stroke-width="2">
+        <line x1="163" y1="150" x2="163" y2="122" />
+        <line x1="837" y1="150" x2="837" y2="122" />
+        <line x1="300" y1="92" x2="300" y2="60" />
+        <line x1="700" y1="92" x2="700" y2="60" />
+        <line x1="500" y1="26" x2="500" y2="-10" />
+      </g>
+      <g fill="#e0a83e">
+        <polygon points="163,122 163,138 185,130" />
+        <polygon points="837,122 837,138 815,130" />
+        <polygon points="300,60 300,78 324,69" />
+        <polygon points="700,60 700,78 676,69" />
+        <polygon points="500,-10 500,10 526,0" />
+      </g>
+    </svg>
+    <div class="wrap">
+      <div class="meta">Um ensaio de dados sobre as princesas da Disney, de 1937 a 2023</div>
+      <h1>Diversidade sim. Protagonismo, nem sempre.</h1>
+      <p class="sub">Em 86 anos, a linha de princesas passou de um elenco inteiramente branco para personagens de várias
+        origens. Os números por trás de cada lançamento mostram o que mudou e o que ficou igual.</p>
+      <svg id="strip" viewBox="0 0 760 70"></svg>
+    </div>
+  </section>
+
+  <div class="wrap">
+    <div class="scrolly">
+      <div class="steps" id="steps">
+        <div class="step" data-s="0">
+          <div class="when">O ponto de partida</div>
+          <h3>Quinze princesas em ordem cronológica</h3>
+          <p>Cada ponto é uma personagem, com a cor que a franquia usa para identificá-la. O espaçamento é igual entre
+            elas, não proporcional aos anos, para que todos os nomes caibam na tela.</p>
+        </div>
+        <div class="step" data-s="1">
+          <div class="when">1937 a 1991</div>
+          <h3>Cinquenta e quatro anos de uma única cor de pele</h3>
+          <p>De Branca de Neve a Bela, todas as princesas são brancas e europeias. A Disney nunca declarou a etnia de
+            nenhuma delas. A brancura era o padrão e não precisava de explicação.</p>
+        </div>
+        <div class="step" data-s="2">
+          <div class="when">1992 a 1998</div>
+          <h3>O boom multicultural</h3>
+          <p>Jasmine, Pocahontas e Mulan chegam em menos de uma década, acompanhando o auge do debate multicultural nos
+            Estados Unidos. O anel dourado marca quem foi apresentada como pioneira de sua origem.</p>
+          <p class="src">A pesquisa acadêmica é cética: para Benhamou (2014), o período troca a exclusão por um discurso
+            que evita falar de raça.</p>
+        </div>
+        <div class="step" data-s="3">
+          <div class="when">2009 a 2023</div>
+          <h3>Uma coroa por vez</h3>
+          <p>Tiana, Elena de Avalor, Moana, Raya e Asha aparecem ao longo de 14 anos, cada uma apresentada como uma
+            "primeira": afro-americana, latina, polinésia. O padrão de exceção isolada se repete a cada lançamento.</p>
+        </div>
+        <div class="step" data-s="4">
+          <div class="when">Quem precisa se explicar</div>
+          <h3>A etnia só é declarada para quem não é branca</h3>
+          <p>Das sete princesas brancas, nenhuma teve a etnia declarada oficialmente. As oito demais vêm acompanhadas de
+            comunicado, entrevista de produção ou consultoria cultural.</p>
+          <p class="src">Esse fenômeno tem nome na teoria racial crítica: "branquitude não marcada", em que a identidade
+            branca funciona como neutra e só as outras são marcadas.</p>
+        </div>
+        <div class="step" data-s="5">
+          <div class="when">Bilheteria mundial</div>
+          <h3>Dinheiro não segue a cor da protagonista</h3>
+          <p>Jasmine (US$ 504 mi) e Moana (US$ 644 mi) estão entre as maiores bilheterias. Rapunzel, branca, lidera com
+            US$ 608 mi. Raya, com US$ 130 mi, é a menor, e seu filme estreou durante a pandemia, junto com o streaming.
+          </p>
+          <p class="src">Cuidado: os pontos vazados, de filmes até 1991, têm dados internacionais incompletos. Não dá
+            para comparar esses valores com os dos filmes recentes.</p>
+        </div>
+        <div class="step" data-s="6">
+          <div class="when">Recepção</div>
+          <h3>Crítica e público quase sempre concordam</h3>
+          <p>Só dois filmes ficam abaixo de 60% de aprovação da crítica: Pocahontas e Wish. Em Pocahontas, o público
+            também aprovou pouco (64%). Em Wish, o público foi bem mais generoso (80%).</p>
+          <p class="src">Isso não prova causa. Aladdin, Mulan, Moana e Raya têm notas tão altas quanto qualquer filme
+            com princesa branca. Passe o mouse nos pontos para ver os valores.</p>
+        </div>
+      </div>
+
+      <div class="chart-col">
+        <svg id="chart" viewBox="0 0 720 560" preserveAspectRatio="xMidYMid meet"></svg>
+      </div>
+    </div>
+  </div>
+
+  <section class="closing">
+    <div class="wrap">
+      <h2>A Disney aprendeu a diversificar a aparência. Falta medir quem realmente protagoniza.</h2>
+      <p>Este esboço compara filmes entre si. O próximo passo é olhar dentro de cada filme, cruzando esses dados com
+        tempo de fala e tempo de tela por personagem, para saber se a assimetria também aparece na própria história.</p>
+      <div class="note">
+        <b>Nota metodológica.</b> Aprovação de crítica e de público: Rotten Tomatoes (Tomatometer e Popcornmeter).
+        Etnia: declarações oficiais de estúdio, entrevistas de produção e literatura acadêmica, com fontes linha a linha
+        na planilha. Bilheteria: Box Office Mojo, com dados internacionais incompletos para filmes antigos. Elena de
+        Avalor é série de TV e por isso não tem bilheteria nem nota da crítica. Nos gráficos em ordem cronológica, o
+        espaçamento é igual entre as personagens, e não proporcional aos anos.
+        <br><br>
+        <b>Referência teórica.</b> BENHAMOU, Eve. "From the Advent of Multiculturalism to the Erasure of Race: The
+        Representation of Race Relations in Disney Animated Features (1995-2009)". <i>Exchanges: The Warwick Research
+          Journal</i>, 2014. Disponível em: <a
+          href="https://exchanges.warwick.ac.uk/index.php/exchanges/article/download/106/108/358"
+          style="color:var(--plum)">exchanges.warwick.ac.uk</a>. Analisa Pocahontas, Atlantis e A Princesa e o Sapo como
+        estudos de caso do multiculturalismo dos anos 1990 e 2000, e é a base teórica da seção sobre esse período.
+        <br><br>
+        <b>Fontes de entrevista e comunicado oficial.</b> Tiana (2009): CBS News, cobertura do anúncio da Disney da
+        primeira princesa afro-americana da linha oficial. Asha (2023): entrevista do produtor Juan Pablo Reyes
+        Lancaster Jones à Geeks of Color (nov/2023). Elena de Avalor (2016): anúncio oficial da Disney como primeira
+        princesa latina, documentado no guia de pesquisa da UCLA Library sobre raça e etnia na Disney. Moana (2016):
+        cobertura de imprensa sobre a formação do Oceanic Story Trust, grupo consultivo de especialistas culturais do
+        Pacífico. Jasmine, Pocahontas e Mulan: classificação cruzada com a Disney Princess Wiki (Fandom).
+        <br><br>
+        <b>Premiações.</b> Dados de prêmios e indicações coletados no IMDb.
+      </div>
+    </div>
+  </section>
+
+  <div id="tip"></div>
+
+  <script>
+    const raw = [
+      {nome: "Branca de Neve", obra: "Branca de Neve e os Sete Anões", ano: 1937, etnia: "Branca/europeia", declarada: false, bil: 185.1, cri: 0.97, pub: 0.78, cor: "#d99a2b", pio: false},
+      {nome: "Cinderela", obra: "Cinderela", ano: 1950, etnia: "Branca/europeia", declarada: false, bil: 96.4, cri: 0.95, pub: 0.80, cor: "#5b93d1", pio: false},
+      {nome: "Aurora", obra: "A Bela Adormecida", ano: 1959, etnia: "Branca/europeia", declarada: false, bil: 51.6, cri: 0.90, pub: 0.80, cor: "#d16a97", pio: false},
+      {nome: "Ariel", obra: "A Pequena Sereia", ano: 1989, etnia: "Branca/europeia", declarada: false, bil: 211.3, cri: 0.92, pub: 0.88, cor: "#2f9384", pio: false},
+      {nome: "Bela", obra: "A Bela e a Fera", ano: 1991, etnia: "Branca/francesa", declarada: false, bil: 451.3, cri: 0.95, pub: 0.94, cor: "#c98d2e", pio: false},
+      {nome: "Jasmine", obra: "Aladdin", ano: 1992, etnia: "Árabe / Oriente Médio", declarada: true, bil: 504.1, cri: 0.96, pub: 0.92, cor: "#1f9a8c", pio: true},
+      {nome: "Pocahontas", obra: "Pocahontas", ano: 1995, etnia: "Nativa-americana (Powhatan)", declarada: true, bil: 346.1, cri: 0.58, pub: 0.64, cor: "#b95f33", pio: true},
+      {nome: "Mulan", obra: "Mulan", ano: 1998, etnia: "Chinesa", declarada: true, bil: 304.3, cri: 0.91, pub: 0.85, cor: "#bd3b52", pio: true},
+      {nome: "Tiana", obra: "A Princesa e o Sapo", ano: 2009, etnia: "Afro-americana", declarada: true, bil: 267.1, cri: 0.86, pub: 0.74, cor: "#348553", pio: true},
+      {nome: "Rapunzel", obra: "Enrolados", ano: 2010, etnia: "Branca/europeia", declarada: false, bil: 607.6, cri: 0.89, pub: 0.87, cor: "#8659ab", pio: false},
+      {nome: "Merida", obra: "Valente", ano: 2012, etnia: "Branca/escocesa", declarada: false, bil: 539.0, cri: 0.78, pub: 0.75, cor: "#42639b", pio: false},
+      {nome: "Elena de Avalor", obra: "Elena of Avalor (série de TV)", ano: 2016, etnia: "Latina", declarada: true, bil: null, cri: null, pub: 0.83, cor: "#b8452f", pio: true},
+      {nome: "Moana", obra: "Moana: Um Mar de Aventuras", ano: 2016, etnia: "Polinésia", declarada: true, bil: 643.5, cri: 0.96, pub: 0.89, cor: "#d16c3b", pio: true},
+      {nome: "Raya", obra: "Raya e o Último Dragão", ano: 2021, etnia: "Sudeste Asiático", declarada: true, bil: 130.4, cri: 0.93, pub: 0.97, cor: "#2c806b", pio: true},
+      {nome: "Asha", obra: "Wish: O Poder dos Desejos", ano: 2023, etnia: "Sul-europeia e norte-africana", declarada: true, bil: 255.0, cri: 0.48, pub: 0.80, cor: "#4573a6", pio: true}
+    ];
+    const W = 720, H = 560;
+
+    /* faixa decorativa do topo: as 15 cores */
+    (function () {
+      const s = d3.select("#strip");
+      s.selectAll("circle").data(raw).join("circle")
+        .attr("cx", (d, i) => 14 + i * (732 / 14)).attr("cy", 35).attr("r", 0).attr("fill", d => d.cor)
+        .transition().delay((d, i) => i * 70).duration(500).attr("r", 13);
+    })();
+
+    const svg = d3.select("#chart");
+    const xs = i => 44 + i * (632 / 14);
+    const yBil = d3.scaleLinear().domain([0, 700]).range([470, 90]);
+    const xCri = d3.scaleLinear().domain([0.45, 1]).range([90, 680]);
+    const yPub = d3.scaleLinear().domain([0.6, 1]).range([490, 70]);
+    /* posição de cada nome no gráfico de crítica × público (dx, dy, alinhamento) */
+    const LAB6 = {
+      "Raya": {dx: 0, dy: -14, a: "middle"}, "Bela": {dx: 13, dy: 4, a: "start"},
+      "Jasmine": {dx: 13, dy: 4, a: "start"}, "Moana": {dx: 13, dy: 4, a: "start"},
+      "Ariel": {dx: 0, dy: -14, a: "middle"}, "Rapunzel": {dx: -13, dy: 4, a: "end"},
+      "Mulan": {dx: 13, dy: 4, a: "start"}, "Aurora": {dx: -13, dy: 4, a: "end"},
+      "Cinderela": {dx: 0, dy: -14, a: "middle"}, "Branca de Neve": {dx: 0, dy: 24, a: "middle"},
+      "Tiana": {dx: 0, dy: 24, a: "middle"}, "Merida": {dx: 0, dy: 24, a: "middle"},
+      "Pocahontas": {dx: 0, dy: -21, a: "middle"}, "Asha": {dx: 0, dy: -21, a: "middle"}
+    };
+    const brancas = raw.filter(d => !d.declarada), outras = raw.filter(d => d.declarada);
+    const xg = (arr, d) => 80 + arr.indexOf(d) * (560 / (arr.length - 1));
+
+    /* guias (camadas de fundo, alternam por etapa) */
+    const gYears = svg.append("g").attr("opacity", 0);
+    raw.forEach((d, i) => gYears.append("text").attr("class", "tick").attr("x", xs(i)).attr("y", H - 24).text(d.ano));
+    gYears.append("line").attr("class", "grid").attr("x1", 24).attr("x2", W - 24).attr("y1", H - 42).attr("y2", H - 42);
+
+    const gRows = svg.append("g").attr("opacity", 0);
+    gRows.append("text").attr("class", "head").attr("x", 40).attr("y", 118).text("Etnia nunca declarada pela Disney (7)");
+    gRows.append("text").attr("class", "head").attr("x", 40).attr("y", 318).text("Etnia declarada em comunicado ou entrevista (8)");
+    gRows.append("line").attr("class", "grid").attr("x1", 24).attr("x2", W - 24).attr("y1", 255).attr("y2", 255);
+
+    const gBil = svg.append("g").attr("opacity", 0);
+    gBil.append("rect").attr("x", xs(0) - 24).attr("y", 70).attr("width", xs(4) - xs(0) + 48).attr("height", 400)
+      .attr("fill", "#f3eef8");
+    gBil.append("text").attr("class", "tick").attr("x", (xs(0) + xs(4)) / 2).attr("y", 84).text("dados internacionais incompletos");
+    [0, 200, 400, 600].forEach(v => {
+      gBil.append("line").attr("class", "grid").attr("x1", 24).attr("x2", W - 24).attr("y1", yBil(v)).attr("y2", yBil(v));
+      gBil.append("text").attr("class", "tick").attr("x", 30).attr("y", yBil(v) - 4).attr("text-anchor", "start").style("text-anchor", "start").text(v === 0 ? "0" : "US$ " + v + " mi");
+    });
+
+    const gScat = svg.append("g").attr("opacity", 0);
+    [0.6, 0.7, 0.8, 0.9, 1].forEach(v => {
+      gScat.append("line").attr("class", "grid").attr("x1", 60).attr("x2", W - 24).attr("y1", yPub(v)).attr("y2", yPub(v));
+      gScat.append("text").attr("class", "tick").attr("x", 54).attr("y", yPub(v) + 3).style("text-anchor", "end").text(Math.round(v * 100) + "%");
+    });
+    [0.5, 0.6, 0.7, 0.8, 0.9, 1].forEach(v => {
+      gScat.append("text").attr("class", "tick").attr("x", xCri(v)).attr("y", H - 46).text(Math.round(v * 100) + "%");
+    });
+    gScat.append("text").attr("class", "head").attr("x", W / 2).attr("y", H - 16).style("text-anchor", "middle").text("aprovação da crítica");
+    gScat.append("text").attr("class", "head").attr("x", 60).attr("y", 44).text("aprovação do público");
+
+    /* pontos */
+    const node = svg.append("g").selectAll("g").data(raw).join("g");
+    node.append("circle").attr("class", "ring").attr("fill", "none").attr("stroke-width", 2.2).attr("opacity", 0);
+    node.append("circle").attr("class", "dot").attr("stroke-width", 2);
+    node.append("text").attr("class", "lab");
+
+    function target(s, d, i) {
+      const t = {x: xs(i), y: H / 2 - 10, r: 11, op: 1, ring: null, hollow: false, lab: true, dy: i % 2 ? 30 : -19};
+      if (s === 0) {t.ring = null;}
+      if (s === 1) {t.op = (!d.declarada && d.ano <= 1991) ? 1 : 0.15;}
+      if (s === 2) {t.op = (d.ano >= 1992 && d.ano <= 1998) ? 1 : 0.15; if (t.op === 1) t.ring = "#d99a2b";}
+      if (s === 3) {t.op = d.ano >= 2009 ? 1 : 0.15; if (t.op === 1 && d.pio) t.ring = "#d99a2b";}
+      if (s === 4) {
+        const arr = d.declarada ? outras : brancas;
+        const k = arr.indexOf(d);
+        t.x = xg(arr, d); t.y = d.declarada ? 400 : 200; t.r = 13;
+        t.dy = k % 2 ? 34 : -23;
+        if (d.pio) t.ring = "#d99a2b";
+      }
+      if (s === 5) {
+        t.x = xs(i); t.y = d.bil == null ? 505 : yBil(d.bil); t.r = 11;
+        t.hollow = d.ano <= 1991; t.op = d.bil == null ? 0.45 : 1;
+        t.dy = i % 2 ? 26 : -17;
+        if (d.pio) t.ring = "#d99a2b";
+      }
+      if (s === 6) {
+        t.op = d.cri == null ? 0 : 1; t.r = 9;
+        t.x = d.cri == null ? xCri(0.5) : xCri(d.cri);
+        t.y = d.pub == null ? yPub(0.7) : yPub(d.pub);
+        const L = LAB6[d.nome];
+        t.lab = d.cri != null && !!L;
+        if (L) {t.dx = L.dx; t.dy = L.dy; t.anchor = L.a;}
+        if (d.cri != null && d.cri < 0.6) t.ring = "#c93a4f";
+      }
+      return t;
+    }
+
+    function show(g, on) {g.transition().duration(500).attr("opacity", on ? 1 : 0);}
+
+    function update(s) {
+      show(gYears, s <= 3 || s === 5);
+      show(gRows, s === 4);
+      show(gBil, s === 5);
+      show(gScat, s === 6);
+      node.each(function (d, i) {
+        const t = target(s, d, i), g = d3.select(this);
+        g.transition().duration(850).ease(d3.easeCubicInOut).attr("transform", `translate(${t.x},${t.y})`).attr("opacity", t.op);
+        g.select(".dot").transition().duration(850).attr("r", t.r)
+          .attr("fill", t.hollow ? "#ffffff" : d.cor).attr("stroke", d.cor);
+        g.select(".ring").transition().duration(850).attr("r", t.r + 5)
+          .attr("stroke", t.ring || "none").attr("opacity", t.ring ? 1 : 0);
+        g.select(".lab").text(d.nome).style("text-anchor", t.anchor || "middle")
+          .transition().duration(850)
+          .attr("x", t.dx || 0).attr("y", t.dy).attr("opacity", t.lab ? 1 : 0)
+          .style("fill", s === 6 ? d3.color(d.cor).darker(0.4).formatHex() : "#2a2233")
+          .style("font-weight", s === 6 ? 600 : 500);
+      });
+    }
+
+    /* tooltip */
+    const tip = document.getElementById("tip");
+    const pct = v => v == null ? "sem dado" : Math.round(v * 100) + "%";
+    node.on("mousemove", (e, d) => {
+      tip.innerHTML = `<b>${d.nome}</b> · ${d.ano}<br>${d.obra}<br>${d.etnia}<br>Crítica ${pct(d.cri)} · Público ${pct(d.pub)}${d.bil ? `<br>Bilheteria US$ ${d.bil.toLocaleString("pt-BR")} mi` : ""}`;
+      tip.style.left = Math.min(e.clientX + 14, innerWidth - 240) + "px"; tip.style.top = (e.clientY + 14) + "px"; tip.style.opacity = 1;
+    }).on("mouseleave", () => {tip.style.opacity = 0;});
+
+    /* rolagem: cada bloco de texto ativa uma etapa do gráfico */
+    const steps = document.querySelectorAll(".step");
+    const io = new IntersectionObserver(es => {
+      es.forEach(e => {
+        if (e.isIntersecting) {
+          steps.forEach(s => s.classList.remove("on"));
+          e.target.classList.add("on");
+          update(+e.target.dataset.s);
+        }
+      });
+    }, {rootMargin: "-45% 0px -45% 0px"});
+    steps.forEach(s => io.observe(s));
+
+    update(0);
+  </script>
+</body>
+
+</html>
