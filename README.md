@@ -62,7 +62,9 @@ Fontes completas e por personagem estão documentadas na aba "Notas Metodológic
 
 ## Capturas de tela
 
-Salve as imagens em uma pasta `screenshots/` ao lado deste README.
+Arquivo: `screenshot.gif`
+
+Animação única reunindo as três etapas do protótipo:
 
 - **Abertura** — as 15 princesas em ordem cronológica
 - **Separação entre etnia nunca declarada e etnia oficialmente declarada**
