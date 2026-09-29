@@ -34,7 +34,6 @@ Arquivo: `princesas_diversidade_dados.xlsx`
 | `Dados` | 15 princesas, com ano de lançamento, estúdio, etnia declarada, fonte da classificação, bilheteria, aprovação de crítica e público, prêmios e duração |
 | `Dicionário de Dados` | Descrição de cada coluna |
 | `Notas Metodológicas` | Registro de decisões difíceis, casos ambíguos e referências completas |
-| `Legenda` | Instruções de uso da planilha |
 
 ### Metodologia de classificação de etnia
 
